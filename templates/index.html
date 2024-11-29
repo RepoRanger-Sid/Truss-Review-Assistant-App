@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Truss Review Assistant - MiTek</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<style>
+    /* Modern Microsoft-style design */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f3f3f3;
+        color: #333;
+    }
+    .container {
+        max-width: 1400px;
+    }
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    /* Update card header style */
+    .card-header {
+        background-color: #333333 !important;
+        color: #fff !important;
+        border-top-left-radius: 12px !important;
+        border-top-right-radius: 12px !important;
+        font-weight: 600;
+        padding: 1rem 1.25rem;
+    }
+    .btn-primary {
+        background-color: #0078d4;
+        border: none;
+        border-radius: 8px;
+    }
+    .btn-primary:hover {
+        background-color: #005a9e;
+    }
+    .btn-success {
+        background-color: #107c10;
+        border: none;
+        border-radius: 8px;
+    }
+    .btn-success:hover {
+        background-color: #0b5a0b;
+    }
+    .btn-outline-primary {
+        border-radius: 8px;
+        color: #0078d4;
+        border-color: #0078d4;
+    }
+    .btn-outline-primary:hover {
+        background-color: #e5f1fb;
+        color: #0078d4;
+        border-color: #0078d4;
+    }
+    .btn-danger {
+        border-radius: 8px;
+        background-color: #d83b01;
+        border: none;
+    }
+    .btn-danger:hover {
+        background-color: #a62e01;
+    }
+    .progress {
+        background-color: #f3f3f3;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-grow: 1;
+        height: 0.5rem;
+    }
+    .progress-bar {
+        background-color: #0078d4;
+        border-radius: 8px;
+    }
+    .form-select, 
+    .form-control,
+    .input-group-text {
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+    }
+    .form-select:focus, 
+    .form-control:focus {
+        border-color: #0078d4;
+        box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.25);
+    }
+    .list-group-item {
+        border: none;
+        border-radius: 8px;
+        background-color: #fff;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    .textarea-notes {
+        height: calc(100vh - 250px);
+        border-radius: 12px;
+        background-color: #f9f9f9;
+        padding: 1rem;
+        border: 1px solid #e0e0e0;
+    }
+    .sticky-notes {
+        position: sticky;
+        top: 1rem;
+        height: 100%;
+    }
+    .badge {
+        font-size: 0.9rem;
+        background-color: #0078d4 !important;
+        color: #fff;
+        padding: 0.5em 1em;
+        border-radius: 6px;
+    }
+    .input-group-text {
+        background-color: #f5f5f5;
+        color: #333;
+        border: 1px solid #e0e0e0;
+    }
+    .form-label {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    .progress-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    /* Increase spacing between form elements */
+    .input-group {
+        margin-bottom: 1rem;
+    }
+    .form-select-lg {
+        margin-bottom: 1rem;
+    }
+    /* Smooth transitions */
+    .btn, .form-control, .form-select {
+        transition: all 0.2s ease-in-out;
+    }
+    /* Input field styles */
+    .form-control {
+        text-align: right;
+    }
+
+    .form-control::placeholder {
+        color: #6c757d;
+        opacity: 0.65;
+    }
+
+    /* Dropdown styles */
+    .form-select {
+        text-align: right;
+        height: calc(1.5em + 0.75rem + 2px) !important;
+        padding: 0.375rem 2.25rem 0.375rem 0.75rem !important;
+        font-size: 0.9rem !important;
+        background-position: left 0.75rem center !important;
+        padding-left: 2rem !important;
+        min-width: 140px !important; /* Increased width */
+    }
+
+    /* Optional: Adjust dropdown arrow color for better visibility */
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    }
+
+    /* Layout adjustments */
+    .deflection-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .deflection-row label {
+        margin-bottom: 0;
+        flex: 1;
+    }
+
+    .deflection-row select {
+        flex: 1;
+        margin-left: 1rem;
+    }
+
+    .input-group .form-control {
+        text-align: right;
+        padding-right: 45px !important;
+    }
+
+    .unit-display {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        pointer-events: none;
+        z-index: 4;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .list-group-item span {
+        font-size: 0.9rem;
+    }
+
+    /* Add to existing styles */
+    .wind-speed-input {
+        width: 80px !important;
+        padding-right: 45px !important;
+    }
+
+    .unit-display.mph {
+        right: 8px;
+    }
+
+    /* Add to existing styles */
+    .textarea-notes {
+        text-align: left;  /* Change from text-end/right to left */
+        white-space: pre-wrap;
+        font-size: 0.9rem;
+    }
+
+    .unit-display {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        pointer-events: none;
+        z-index: 4;
+    }
+</style>
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Truss Review Assistant - MiTek</h1>
+
+    <div class="row">
+        <!-- Left Column - make slightly narrower -->
+        <div class="col-7">
+            <form id="analysisForm" method="POST" action="/submit" enctype="multipart/form-data">
+                <!-- 1. Upload Shop Drawing -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-upload me-2"></i>
+                        1. Upload Shop Drawing
+                    </div>
+                    <div class="card-body">
+                        <div class="progress-container">
+                            <button type="button" id="loadFileBtn" class="btn btn-primary">
+                                <i class="bi bi-folder2-open me-2"></i>Load File
+                            </button>
+                            <div class="progress flex-grow-1">
+                                <div id="uploadProgress" class="progress-bar" role="progressbar"></div>
+                            </div>
+                            <input type="file" id="fileInput" name="fileInput" accept=".pdf" style="display: none;">
+                        </div>
+                        <div id="fileStatus" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <!-- 2. Loading Data -->
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white d-flex align-items-center">
+                        <i class="bi bi-database-fill me-2"></i>
+                        2. Loading Data
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <!-- Roof Loads Group -->
+                            <div class="list-group-item">
+                                <h6 class="mb-3">
+                                    <i class="bi bi-house-fill me-2"></i>
+                                    Roof Loads
+                                </h6>
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                            <span class="input-group-text">Dead Load</span>
+                                            <input type="number" 
+                                                   id="roofDeadLoad" 
+                                                   name="roofDeadLoad" 
+                                                   class="form-control text-end" 
+                                                   placeholder="21 psf"
+                                                   data-unit="psf">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                            <span class="input-group-text">Live Load (≥ 4/12)</span>
+                                            <input type="number" id="roofLiveLoadSteep" name="roofLiveLoadSteep" class="form-control text-end" placeholder="16 psf" data-unit="psf">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                            <span class="input-group-text">Live Load (< 4/12)</span>
+                                            <input type="number" id="roofLiveLoadShallow" name="roofLiveLoadShallow" class="form-control text-end" placeholder="20 psf" data-unit="psf">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Floor Loads Group -->
+                            <div class="list-group-item">
+                                <h6 class="mb-3">
+                                    <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+                                    Floor Loads
+                                </h6>
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                            <span class="input-group-text">Dead Load</span>
+                                            <input type="number" id="floorDeadLoad" name="floorDeadLoad" class="form-control text-end" placeholder="18 psf" data-unit="psf">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                            <span class="input-group-text">Live Load</span>
+                                            <input type="number" id="floorLiveLoad" name="floorLiveLoad" class="form-control text-end" placeholder="40 psf" data-unit="psf">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Truss Spacing -->
+                            <div class="list-group-item">
+                                <h6 class="mb-3">
+                                    <i class="bi bi-arrows-expand me-2"></i>
+                                    Spacing
+                                </h6>
+                                <div class="input-group">
+                                    <span class="input-group-text">Truss Spacing</span>
+                                    <input type="number" id="trussSpacing" name="trussSpacing" class="form-control text-end" placeholder="2 ft" data-unit="ft">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Deflection Data -->
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white d-flex align-items-center">
+                        <i class="bi bi-arrows-collapse me-2"></i>
+                        3. Deflection Data
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <!-- Roof Load Deflection Limits -->
+                            <div class="list-group-item">
+                                <h6 class="mb-3">
+                                    <i class="bi bi-arrow-down-square me-2"></i>
+                                    Roof Load Deflection Limits
+                                </h6>
+                                <div class="mb-3 d-flex align-items-center justify-content-between">
+                                    <span>Live Load Deflection</span>
+                                    <select id="roofLiveDeflection" name="roofLiveDeflection" class="form-select ms-3" style="width: 120px">
+                                        <option value="L/240">L/240</option>
+                                        <option value="L/360" selected>L/360</option>
+                                        <option value="L/480">L/480</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Total Load Deflection</span>
+                                    <select id="roofTotalDeflection" name="roofTotalDeflection" class="form-select ms-3" style="width: 120px">
+                                        <option value="L/240" selected>L/240</option>
+                                        <option value="L/360">L/360</option>
+                                        <option value="L/480">L/480</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Floor Load Deflection Limits -->
+                            <div class="list-group-item">
+                                <h6 class="mb-3">
+                                    <i class="bi bi-arrow-down-square-fill me-2"></i>
+                                    Floor Load Deflection Limits
+                                </h6>
+                                <div class="mb-3 d-flex align-items-center justify-content-between">
+                                    <span>Live Load Deflection</span>
+                                    <select id="floorLiveDeflection" name="floorLiveDeflection" class="form-select ms-3" style="width: 120px">
+                                        <option value="L/360" selected>L/360</option>
+                                        <option value="L/480">L/480</option>
+                                        <option value="L/600">L/600</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Total Load Deflection</span>
+                                    <select id="floorTotalDeflection" name="floorTotalDeflection" class="form-select ms-3" style="width: 120px">
+                                        <option value="L/240" selected>L/240</option>
+                                        <option value="L/360">L/360</option>
+                                        <option value="L/480">L/480</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Design Code Criteria -->
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white d-flex align-items-center">
+                        <i class="bi bi-building me-2"></i>
+                        4. Design Code Criteria
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <!-- Building Code -->
+                            <div class="list-group-item mb-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Design Building Code</span>
+                                    <select id="buildingCode" name="buildingCode" class="form-select ms-3" style="width: 120px">
+                                        <option value="IBC 2021" selected>IBC 2021</option>
+                                        <option value="IBC 2018">IBC 2018</option>
+                                        <option value="IBC 2015">IBC 2015</option>
+                                        <option value="IBC 2012">IBC 2012</option>
+                                        <option value="IBC 2009">IBC 2009</option>
+                                        <option value="IBC 2006">IBC 2006</option>
+                                        <option value="IRC 2021">IRC 2021</option>
+                                        <option value="IRC 2018">IRC 2018</option>
+                                        <option value="IRC 2015">IRC 2015</option>
+                                        <option value="IRC 2012">IRC 2012</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Risk Category -->
+                            <div class="list-group-item mb-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Risk Category</span>
+                                    <select id="riskCategory" name="riskCategory" class="form-select ms-3" style="width: 120px">
+                                        <option value="I">I</option>
+                                        <option value="II" selected>II</option>
+                                        <option value="III">III</option>
+                                        <option value="IV">IV</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Wind Standard -->
+                            <div class="list-group-item mb-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Design Wind Standard</span>
+                                    <select id="windStandard" name="windStandard" class="form-select ms-3" style="width: 120px">
+                                        <option value="ASCE 7-22">ASCE 7-22</option>
+                                        <option value="ASCE 7-16" selected>ASCE 7-16</option>
+                                        <option value="ASCE 7-10">ASCE 7-10</option>
+                                        <option value="ASCE 7-05">ASCE 7-05</option>
+                                        <option value="ASCE 7-02">ASCE 7-02</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Wind Speed -->
+                            <div class="list-group-item mb-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Design Wind Speed</span>
+                                    <div class="input-group" style="width: 120px">
+                                        <input type="number" 
+                                               id="windSpeed" 
+                                               name="windSpeed" 
+                                               class="form-control text-end wind-speed-input" 
+                                               placeholder="115 mph"
+                                               data-unit="mph"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Exposure Category -->
+                            <div class="list-group-item">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span>Exposure Category</span>
+                                    <select id="exposureCategory" name="exposureCategory" class="form-select ms-3" style="width: 120px">
+                                        <option value="B" selected>B</option>
+                                        <option value="C">C</option>
+                                        <option value="D">D</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="progress-container">
+                            <button type="submit" id="runBtn" class="btn btn-primary" disabled>
+                                <i class="bi bi-play-circle me-2"></i>Run File
+                            </button>
+                            <div class="progress">
+                                <div id="runProgress" class="progress-bar" role="progressbar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Additional Buttons -->
+            <div class="d-flex justify-content-center gap-3">
+                <button id="reviewBtn" class="btn btn-outline-primary">Review Another Package</button>
+                <button id="closeBtn" class="btn btn-danger">Close Program</button>
+            </div>
+        </div>
+
+        <!-- Right Column - make wider -->
+        <div class="col-5">
+            <!-- Notes Section -->
+            <div class="card sticky-notes">
+                <div class="card-header bg-dark text-white d-flex align-items-center">
+                    <i class="bi bi-journal-text me-2"></i>
+                    Notes
+                </div>
+                <div class="card-body bg-light">
+                    <textarea class="form-control textarea-notes" readonly>
+The current version of the program provides the following checks:
+
+1. Load Verification - Flags total dead load, live load, and truss spacing if they do not meet user-specified criteria.
+
+2. Design Standards - Flags wind speed, design standard, risk category, and building code discrepancies based on user input.
+
+3. Stress Analysis - Flags top chord, bottom chord, and web member stress if it is ≥ 1.0.
+
+4. Deflection Check - Flags transient load and total load truss deflection if they exceed user-defined limits.
+
+5. Drag Load Identification - Detects if the truss is designed for drag load conditions.
+
+6. Bearing Enhancer Warnings - Flags any requirements for bearing enhancers as specified by the truss designer.
+                    </textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Get the form element
+    const form = document.getElementById('analysisForm');
+
+    // Rest of your JavaScript remains the same
+    const fileInput = document.getElementById('fileInput');
+    const loadFileBtn = document.getElementById('loadFileBtn');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const fileStatus = document.getElementById('fileStatus');
+    const runProgress = document.getElementById('runProgress');
+
+    loadFileBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file && file.type === 'application/pdf') {
+            fileStatus.textContent = `File selected: ${file.name}`;
+            uploadProgress.style.width = '100%';
+        } else {
+            alert('Please select a PDF file.');
+            fileStatus.textContent = '';
+            uploadProgress.style.width = '0%';
+        }
+    });
+
+    const runBtn = document.getElementById('runBtn');
+    const reviewBtn = document.getElementById('reviewBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    runBtn.addEventListener('click', () => {
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 10;
+            runProgress.style.width = `${progress}%`;
+            if (progress >= 100) clearInterval(interval);
+        }, 200);
+    });
+
+    // Review Another Package button functionality
+    reviewBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to review another package?')) {
+            window.location.reload();
+        }
+    });
+
+    // Close Program button functionality
+    closeBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to close the program?')) {
+            window.close();
+        }
+    });
+    
+    // Form submission handler
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Check if file is selected
+        if (!fileInput.files.length) {
+            alert('Please select a PDF file first');
+            return;
+        }
+
+        // Create FormData object
+        const formData = new FormData(form);
+        
+        try {
+            // Show progress bar
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress = Math.min(progress + 10, 90);
+                runProgress.style.width = `${progress}%`;
+            }, 200);
+
+            // Send form data to server
+            const response = await fetch('/submit', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            // Stop progress animation
+            clearInterval(interval);
+            runProgress.style.width = '100%';
+
+            if (data.success) {
+                // Show success message and ask to open folder
+                if (confirm(`File processing completed successfully!\nWould you like to open the output file location?`)) {
+                    window.open(`file:///${data.output_path.replace(/\\/g, '/')}`);
+                }
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            alert(`Error: ${error.message}`);
+        } finally {
+            // Reset progress bar after a delay
+            setTimeout(() => {
+                runProgress.style.width = '0%';
+            }, 2000);
+        }
+    });
+
+    // Function to handle unit display
+    function setupUnitDisplay() {
+        const inputs = document.querySelectorAll('input[type="number"][data-unit]');
+        
+        inputs.forEach(input => {
+            const unit = input.dataset.unit;
+            
+            // Create unit display span
+            const unitSpan = document.createElement('span');
+            unitSpan.className = 'unit-display';
+            
+            // Insert unit display after input
+            input.parentElement.appendChild(unitSpan);
+            
+            // Update unit display on input
+            function updateUnitDisplay() {
+                if (input.value) {
+                    unitSpan.textContent = unit;
+                } else {
+                    unitSpan.textContent = '';
+                }
+            }
+            
+            input.addEventListener('input', updateUnitDisplay);
+            input.addEventListener('change', updateUnitDisplay);
+            
+            // Initial state
+            if (input.value) {
+                updateUnitDisplay();
+            }
+        });
+    }
+
+    // Call the function when document is ready
+    document.addEventListener('DOMContentLoaded', setupUnitDisplay);
+
+    // Add to your existing JavaScript
+    function validateForm() {
+        const requiredFields = [
+            // File upload
+            document.getElementById('fileInput'),
+            // Loading data
+            document.getElementById('roofDeadLoad'),
+            document.getElementById('roofLiveLoadSteep'),
+            document.getElementById('roofLiveLoadShallow'),
+            document.getElementById('floorDeadLoad'),
+            document.getElementById('floorLiveLoad'),
+            document.getElementById('trussSpacing'),
+            // Wind speed
+            document.getElementById('windSpeed')
+        ];
+
+        const requiredSelects = [
+            // Deflection data
+            'roofLiveDeflection',
+            'roofTotalDeflection',
+            'floorLiveDeflection',
+            'floorTotalDeflection',
+            // Design criteria
+            'buildingCode',
+            'riskCategory',
+            'windStandard',
+            'exposureCategory'
+        ];
+
+        const runBtn = document.getElementById('runBtn');
+        
+        function checkFormValidity() {
+            // Check if file is selected
+            const fileValid = document.getElementById('fileInput').files.length > 0;
+            
+            // Check if all number inputs have values
+            const inputsValid = requiredFields.every(field => field.value.trim() !== '');
+            
+            // Check if all selects have values
+            const selectsValid = requiredSelects.every(selectId => 
+                document.getElementById(selectId).value !== ''
+            );
+            
+            runBtn.disabled = !(fileValid && inputsValid && selectsValid);
+        }
+
+        // Add event listeners to all inputs and selects
+        requiredFields.forEach(field => {
+            field.addEventListener('input', checkFormValidity);
+            field.addEventListener('change', checkFormValidity);
+        });
+
+        requiredSelects.forEach(selectId => {
+            document.getElementById(selectId).addEventListener('change', checkFormValidity);
+        });
+
+        // Initial check
+        checkFormValidity();
+    }
+
+    // Call after DOM is loaded
+    document.addEventListener('DOMContentLoaded', validateForm);
+</script>
+
+</body>
+</html>
